@@ -1193,6 +1193,7 @@ extension ClaudeUsageFetcher {
             timeout: timeout,
             standardInput: FileHandle.nullDevice,
             currentDirectoryURL: workingDirectory,
+            suppressSleepInhibitors: true,
             label: "claude-direct-usage")
         return try Self.makeSnapshot(from: ClaudeStatusProbe.parse(text: result.stdout))
     }

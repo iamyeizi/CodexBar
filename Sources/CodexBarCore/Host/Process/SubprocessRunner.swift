@@ -143,6 +143,8 @@ public enum SubprocessRunner {
         acceptsNonZeroExit: Bool = false,
         // Mark this invocation so even detached descendants can be reaped after it exits.
         reapDescendants: Bool = false,
+        // Passive Claude queries must not keep the user's Mac awake while retrieving account metadata.
+        suppressSleepInhibitors: Bool = false,
         label: String) async throws -> SubprocessResult
     {
         let executableURL = URL(fileURLWithPath: binary).standardizedFileURL
@@ -204,6 +206,8 @@ public enum SubprocessRunner {
         stderrCapture.start()
 
         let pid = process.processIdentifier
+        let sleepInhibitorGuard = suppressSleepInhibitors ? ProcessSleepInhibitorGuard.start(processID: pid) : nil
+        defer { sleepInhibitorGuard?.stop() }
         let processGroup: pid_t? = setpgid(pid, pid) == 0 || getpgid(pid) == pid ? pid : nil
         defer { ownership?.reap(processGroup: processGroup) }
 

@@ -116,6 +116,12 @@ This recovers browser-session access; it does not repair missing OAuth credentia
 instead reports a Cloudflare challenge, follow the network guidance under Web API below rather than repeating
 the cookie import.
 
+## Passive CLI probes and macOS sleep
+
+CodexBar's usage and authentication queries are passive probes, not coding sessions. On macOS, their process trees are monitored for Claude Code's built-in `/usr/bin/caffeinate -i -t 300` child. Matching inhibitors are released with SIGTERM within approximately one second, including ones the CLI renews. The probe itself continues to run.
+
+The guard revalidates ancestry and process start identities before signaling. Inhibitors outside the probe's process tree, Coffee sessions, and manual Claude Code sessions are not affected. This is a scoped workaround until Claude Code offers a supported per-invocation opt-out; another invocation shape is left untouched. A brief sleep assertion can still occur between launch and the next check. Claude Desktop's separate keep-awake setting is not changed.
+
 ## Keychain prompt policy (Claude OAuth)
 
 - Preferences → Providers → Claude → Keychain prompt policy.

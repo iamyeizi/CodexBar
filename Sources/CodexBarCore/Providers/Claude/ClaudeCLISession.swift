@@ -69,6 +69,7 @@ actor ClaudeCLISession {
     }
 
     private var process: Process?
+    private var sleepInhibitorGuard: ProcessSleepInhibitorGuard?
     private var primaryFD: Int32 = -1
     private var primaryHandle: FileHandle?
     private var secondaryHandle: FileHandle?
@@ -382,6 +383,7 @@ actor ClaudeCLISession {
         }
 
         self.process = proc
+        self.sleepInhibitorGuard = ProcessSleepInhibitorGuard.start(processID: pid)
         self.primaryFD = primaryFD
         self.primaryHandle = primaryHandle
         self.secondaryHandle = secondaryHandle
@@ -469,6 +471,8 @@ actor ClaudeCLISession {
     }
 
     private func cleanup() {
+        self.sleepInhibitorGuard?.stop()
+        self.sleepInhibitorGuard = nil
         if self.process != nil {
             Self.log.debug("Claude CLI session stopping")
         }
