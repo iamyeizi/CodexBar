@@ -69,7 +69,6 @@ actor ClaudeCLISession {
     }
 
     private var process: Process?
-    private var sleepInhibitorGuard: ProcessSleepInhibitorGuard?
     private var primaryFD: Int32 = -1
     private var primaryHandle: FileHandle?
     private var secondaryHandle: FileHandle?
@@ -142,6 +141,7 @@ actor ClaudeCLISession {
     }
 
     private func captureExclusive(request: CaptureRequest) async throws -> String {
+        defer { self.releaseSleepInhibitors() }
         if try self.ensureStarted(request: request) {
             // Dismiss /usage or /status before typing; keep Escape separate from the next command's input.
             try self.send("\u{1b}")
@@ -377,13 +377,12 @@ actor ClaudeCLISession {
         }
 
         var processGroup: pid_t?
-        if setpgid(pid, pid) == 0 {
+        if setpgid(pid, pid) == 0 || getpgid(pid) == pid {
             processGroup = pid
             TTYCommandRunner.updateActiveProcessGroupForAppShutdown(pid: pid, processGroup: processGroup)
         }
 
         self.process = proc
-        self.sleepInhibitorGuard = ProcessSleepInhibitorGuard.start(processID: pid)
         self.primaryFD = primaryFD
         self.primaryHandle = primaryHandle
         self.secondaryHandle = secondaryHandle
@@ -470,9 +469,19 @@ actor ClaudeCLISession {
         return env
     }
 
+    private func releaseSleepInhibitors() {
+        #if canImport(Darwin)
+        guard let group = self.processGroup, group > 1 else { return }
+        for pid in DarwinProcessEnumerator.allPIDs() where getpgid(pid) == group {
+            guard DarwinProcessEnumerator.executablePath(pid: pid) == "/usr/bin/caffeinate",
+                  getpgid(pid) == group else { continue }
+            kill(pid, SIGTERM)
+        }
+        #endif
+    }
+
     private func cleanup() {
-        self.sleepInhibitorGuard?.stop()
-        self.sleepInhibitorGuard = nil
+        self.releaseSleepInhibitors()
         if self.process != nil {
             Self.log.debug("Claude CLI session stopping")
         }

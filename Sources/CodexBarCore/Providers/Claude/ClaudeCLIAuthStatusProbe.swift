@@ -66,7 +66,6 @@ enum ClaudeCLIAuthStatusProbe {
                 standardInput: FileHandle.nullDevice,
                 currentDirectoryURL: workingDirectory,
                 acceptsNonZeroExit: true,
-                suppressSleepInhibitors: true,
                 label: "claude-auth-status")
             return self.parseStatus(result.stdout) ?? .unavailable
         } catch {

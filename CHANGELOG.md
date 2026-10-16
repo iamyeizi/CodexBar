@@ -1,12 +1,20 @@
 # Changelog
 
-## 0.75.1 — Unreleased
+## 0.76.1 — Unreleased
+
+## 0.76.0 — 2026-10-15
+
+### Highlights
+
+- Memory: provider plugins no longer accumulate memory on every refresh. QuickJS worker temporaries are released and retired JavaScriptCore runtimes are freed, so a 20-provider synthetic workload that grew past 1 GB now stays around 50 MB.
+- Providers: Claude Platform shows the monthly Console API credits included with Max and Team plans; Muse Code can earn one explained Keychain grant on a manual refresh; Helmcode Cloud imports API-host sessions; Factory finds sessions in Firefox Beta, Developer Edition and Nightly; Claude OAuth accounts show their email.
+- Settings and safety: a config file that fails to load is never overwritten, and About now lists open-source acknowledgements with the full license and notice texts, which also ship with the CLI and Linux archives.
+- Menu bar and CLI: optional Large text and monospaced digits for custom layouts; `codexbar usage` fetches up to three providers concurrently in the same order; fast-exiting CLI probes no longer lose their output.
 
 ### Added
 
 - Providers: add Claude Platform for Console API credit balances, expiring subscription and purchased grants, and optional monthly spend, using its signed-in browser session (#4510). Thanks @mjaverto!
 - About: show bundled open-source acknowledgements and bundle SwiftPM and vendored dependency notices with the app, widget, CLI, and Linux desktop (#4483). Thanks @elijahfriedman!
-
 - Menu bar: add optional Large text and monospaced digits to custom layouts, preserving existing sizes and older-build layout compatibility (#4455). Thanks @deinspanjer!
 
 ### Changed
@@ -15,13 +23,17 @@
 
 ### Fixed
 
-- Claude: release the CLI's built-in macOS sleep inhibitor during passive usage and authentication probes without affecting inhibitors outside the probe's process tree.
+- Claude: release macOS sleep inhibitors after passive CLI session probes (#4544). Thanks @iamyeizi!
+- Claude: open Platform usage for default and API accounts while keeping recognized subscriptions on Claude usage settings (#4503). Thanks @Alex-Keyes!
+- Dock: stop rescanning windows on every update pass while preserving Settings and scheduled update dialogs (#4516, #4524). Thanks @harjothkhara and @Leen15!
+- Settings: preserve config files and legacy credentials after read errors during startup, account reloads, and later saves, keep optional Codex credit lanes in the settings catalogue without changing previews, and distinguish real monthly quotas from credit limits (#4509). Thanks @emanuelst!
+- CLI probes: preserve buffered terminal output from fast-exiting commands instead of intermittently returning empty results (refs #4505).
 - Helmcode: import Cloud sessions from the API host or parent domain while preserving older cached sessions, tenant isolation, and manual cookies (#4492). Thanks @aran159!
 - Muse Code: allow one explained Keychain grant during a manual refresh, share its allowance with browser imports, honor denial cooldowns, and distinguish missing permission from temporary Keychain failures (#4489, #4487). Thanks @bcharleson!
-
 - Plugins: release temporary objects between QuickJS refreshes and free retired JavaScriptCore contexts and completed runtimes (#4512, #4486).
 - Claude: show the winning OAuth account’s email with a cached background profile lookup; slow or failed identity requests never delay quota refreshes (#4493). Thanks @flutterrausch!
 - Droid: import sessions from Firefox Beta, Developer Edition, and Nightly, and continue past unavailable browser stores (#4461). Thanks @vincent-peng!
+- Qwen Cloud: treat a Team summary with an empty `Data` object as no Team subscription, so Individual-only accounts no longer show "Team usage unavailable" (#4527, #4525). Thanks @harjothkhara and @mvicari!
 
 ## 0.75.0 — 2026-10-13
 
