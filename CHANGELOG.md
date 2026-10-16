@@ -23,6 +23,7 @@
 - Confetti: let limit-reset celebrations finish falling off the screen instead of cutting off after 5 seconds (#4536). Thanks @lg!
 - OpenCode Go: include v2 session history in local cost and token totals without counting migrated messages twice (#4526). Thanks @edtheflame!
 - Qwen Cloud: treat a Team summary with an empty `Data` object as no Team subscription, so Individual-only accounts no longer show "Team usage unavailable" (#4527, #4525). Thanks @harjothkhara and @mvicari!
+- Claude: release macOS sleep inhibitors after passive CLI session probes (#4544). Thanks @iamyeizi!
 
 ## 0.76.0 — 2026-10-15
 
@@ -45,9 +46,6 @@
 
 ### Fixed
 
-- Claude: release macOS sleep inhibitors after passive CLI session probes (#4544). Thanks @iamyeizi!
-- Claude: open Platform usage for default and API accounts while keeping recognized subscriptions on Claude usage settings (#4503). Thanks @Alex-Keyes!
-- Dock: stop rescanning windows on every update pass while preserving Settings and scheduled update dialogs (#4516, #4524). Thanks @harjothkhara and @Leen15!
 - Settings: preserve config files and legacy credentials after read errors during startup, account reloads, and later saves, keep optional Codex credit lanes in the settings catalogue without changing previews, and distinguish real monthly quotas from credit limits (#4509). Thanks @emanuelst!
 - CLI probes: preserve buffered terminal output from fast-exiting commands instead of intermittently returning empty results (refs #4505).
 - Helmcode: import Cloud sessions from the API host or parent domain while preserving older cached sessions, tenant isolation, and manual cookies (#4492). Thanks @aran159!
